@@ -128,9 +128,15 @@ function DBCard({ target, companyName, onDelete, onTest, testResult, testing, ca
 // ── Formulário: Nova Conexão ──────────────────────────────────────────────────
 function DBForm({ companies, onSave, onClose }) {
   const [form, setForm] = useState({
-    company_id: '', name: '', type: 'mssql', host: '', port: 1433,
-    database_name: '', username: '', password: ''
+    company_id: '', name: '', type: 'postgresql', host: '', port: 5432,
+    database_name: '', username: '', password: '', ssl: false
   });
+  
+  const handleTypeChange = (e) => {
+    const type = e.target.value;
+    const ports = { postgresql: 5432, mssql: 1433, mysql: 3306 };
+    setForm(p => ({ ...p, type, port: ports[type] || 5432 }));
+  };
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const f = (k) => (e) => setForm(p => ({ ...p, [k]: e.target.value }));
@@ -138,7 +144,10 @@ function DBForm({ companies, onSave, onClose }) {
   const submit = async (e) => {
     e.preventDefault(); setLoading(true); setError('');
     try {
-      await integrationsAPI.createTarget(form);
+      await integrationsAPI.createTarget({
+        ...form,
+        options: JSON.stringify({ ssl: form.ssl })
+      });
       onSave();
     } catch (err) { setError(err.response?.data?.error || 'Erro ao salvar'); }
     finally { setLoading(false); }
@@ -163,8 +172,10 @@ function DBForm({ companies, onSave, onClose }) {
         </div>
         <div>
           <label className="label">Tipo</label>
-          <select className="select" value={form.type} onChange={f('type')}>
+          <select className="select" value={form.type} onChange={handleTypeChange}>
+            <option value="postgresql">PostgreSQL</option>
             <option value="mssql">SQL Server (MSSQL)</option>
+            <option value="mysql">MySQL / MariaDB</option>
           </select>
         </div>
         <div>
@@ -187,6 +198,13 @@ function DBForm({ companies, onSave, onClose }) {
         <div className="col-span-2">
           <label className="label">Senha *</label>
           <input className="input" type="password" value={form.password} onChange={f('password')} required />
+        </div>
+      </div>
+      <div className="flex items-center gap-3 p-3 rounded-lg border" style={{borderColor:'var(--border)',background:'var(--bg-elevated)'}}>
+        <input type="checkbox" id="ssl_check" checked={form.ssl} onChange={e => setForm(p => ({...p, ssl: e.target.checked}))} className="w-4 h-4 accent-indigo-500" />
+        <div>
+          <label htmlFor="ssl_check" className="text-sm font-medium cursor-pointer" style={{color:'var(--text-primary)'}}>Usar SSL</label>
+          <p className="text-xs" style={{color:'var(--text-muted)'}}>Ative para bancos em nuvem (Azure, AWS, Neon, etc)</p>
         </div>
       </div>
       {error && <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{error}</div>}
