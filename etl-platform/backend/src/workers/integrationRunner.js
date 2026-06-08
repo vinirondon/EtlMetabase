@@ -120,7 +120,14 @@ async function openTargetPool(target) {
         database: target.database_name,
         user:     target.username,
         password,
-        ssl: target.options ? JSON.parse(target.options).ssl !== false : { rejectUnauthorized: false },
+        ssl: (() => {
+            try {
+                const opts = target.options ? JSON.parse(target.options) : {};
+                if (opts.ssl === false) return false;
+                if (opts.ssl === true) return { rejectUnauthorized: false };
+                return false; // padrão: sem SSL
+            } catch { return false; }
+        })(),
         connectionTimeoutMillis: 20000,
         query_timeout: 300000,
     });
