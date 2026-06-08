@@ -204,10 +204,15 @@ router.post('/targets/:id/test', authenticate, async (req, res) => {
     let testPool = null;
     try {
         const password = decrypt(target.password_encrypted);
+        // SSL: desabilitado por padrão, habilitado só se options.ssl = true
+        let sslConfig = false;
+        if (target.options) {
+            try { const o = JSON.parse(target.options); if (o.ssl === true) sslConfig = { rejectUnauthorized: false }; } catch {}
+        }
         testPool = new Pool({
             host: target.host, port: target.port || 5432,
             database: target.database_name, user: target.username, password,
-            ssl: { rejectUnauthorized: false },
+            ssl: sslConfig,
             connectionTimeoutMillis: 12000,
         });
         const result = await testPool.query(`
