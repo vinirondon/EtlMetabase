@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Tema padrão (Dark) aplicado pelo ThemeContext ── */
+:root {
+  --bg-base:      #0f1117;
+  --bg-surface:   #161b27;
+  --bg-elevated:  #1e2535;
+  --bg-hover:     #242f45;
+  --bg-input:     #0f1117;
+  --border:       #1e2535;
+  --border-hover: #2d3748;
+  --text-primary: #e2e8f0;
+  --text-muted:   #8892a4;
+  --text-hint:    #4a5568;
+  --scrollbar-track: #0f1117;
+  --scrollbar-thumb: #2d3748;
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  * { box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+}
+
+@layer components {
+  .card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border);
+    @apply rounded-xl p-5;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+  .btn-primary {
+    @apply bg-brand-600 hover:bg-brand-500 text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    @apply font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2;
+  }
+  .btn-secondary:hover {
+    background-color: var(--bg-hover);
+    border-color: var(--border-hover);
+  }
+  .btn-danger {
+    @apply bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 font-medium px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2;
+  }
+  .input {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    @apply rounded-lg px-3 py-2 w-full focus:outline-none transition-colors text-sm;
+  }
+  .input:focus { border-color: #6366F1; }
+  .input::placeholder { color: var(--text-hint); }
+  .select {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    @apply rounded-lg px-3 py-2 w-full focus:outline-none transition-colors text-sm;
+  }
+  .select:focus { border-color: #6366F1; }
+  .label {
+    color: var(--text-muted);
+    @apply text-xs font-medium uppercase tracking-wider mb-1 block;
+  }
+  .badge-success  { @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/20; }
+  .badge-error    { @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-500/15 text-red-400 border border-red-500/20; }
+  .badge-warning  { @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-500/15 text-amber-400 border border-amber-500/20; }
+  .badge-info     { @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/15 text-blue-400 border border-blue-500/20; }
+  .badge-neutral  {
+    background-color: var(--bg-elevated);
+    color: var(--text-muted);
+    border: 1px solid var(--border-hover);
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+}
+
+/* ── Transição suave de tema ── */
+*, *::before, *::after {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+/* Exceções — não animar transforms e outros */
+button, a, input, select, textarea {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+/* ── Tema Light — ajustes específicos ── */
+[data-theme="light"] .badge-neutral {
+  background-color: #f1f5f9;
+  color: #64748b;
+  border-color: #cbd5e1;
+}
+[data-theme="light"] .btn-danger {
+  background-color: rgba(239,68,68,0.08);
+  color: #dc2626;
+  border-color: rgba(239,68,68,0.2);
+}
+[data-theme="light"] .btn-danger:hover {
+  background-color: rgba(239,68,68,0.14);
+}
+[data-theme="light"] ::-webkit-scrollbar-track { background: #f1f5f9; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: #cbd5e1; }
